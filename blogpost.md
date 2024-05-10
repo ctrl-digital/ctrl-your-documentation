@@ -12,27 +12,27 @@ Using Google Cloud's Firestore service, Google Tag Manager can query a collectio
 
 Start with creating a Firestore collection. Important for the Firestore service to be set in `Native mode`, in contrast to the Datastore mode, as the API used by GTM requires it. For each document in this collection, its name corresponds to the documented event name and add the necessary parameters to document. 
 
-![[img/firestore_native_mode.png]]
+![firestore_native_mode](img/firestore_native_mode.png)
 ## How to show documentation
 There's a need for a good looking UX; no more spreadsheets to look nor tables in documents. In this example, we'll use a client in Google Tag Manager server side. Why? Because we can. Because now everything is hosted and controlled within the same Google Tag Manager interface. Now, everything is configured and hosted in the same UI. Finally, because it's fun to push the limits of what's reasonable to assign Google Tag Manager to do.
 
 You'll need a custom client in Google Tag Manager for this to work. It'll respond to the URL of the UI. Example: sgtm.example.com/tracking_documentation. Whenever a colleague visits the URL, a request is made to Firestore which fetches the documentation, the client then populates a HTML string with all the responded events and parameters, and finally returns all data as a HTML string to be visualised by the browser along with javascript and CSS as inline code. Here we have a complete interface of a tracking document provided by nothing but Google Tag Manager.
 
- ![[img/web_page_example.png]]
+ ![web_page_example](img/web_page_example.png)
 
 The interface exposes all documented events and their parameters assigned. The events are easily overviewed and it's easy for a developer to get a grasp of what data is needed for an event to properly fire. A new analyst can quickly get a grasp of all collected events and their parameters with example values and descriptions. 
 
-![[img/web_event_example.png]]
+![web_event_example](img/web_event_example.png)
 ### How to create automated documentation
 Automated might be a strong word for it. It's actively listening on all pre-specified paths for new requests. Whenever a new request arrives, the custom client reads the request and passes it on to be ***claimed by another client***. Very important the last part. This client shouldn't claim any requests made to the tracking endpoint as this is handled by the ordinary client. This means that the priority needs to be adjusted to be greater than the ordinary claiming client!
 
 This documentation client reads the request and checks against its Firestore database. If the incoming request has all its event registered then the client waits for the next request to be made. If a request contains an event which is not documented, then the custom client springs into action by grabbing the event name along with all the parameters. This data is written to Firestore under the document *Undocmented* (or whatever, I'm not in charge) and each entry is an object with the event name as a key and the parsed event data object as a nested object as value. This collects all the events received at the endpoint and enables for easier mapping of new events when it's time to update the documentation.
 
-![[img/firestore_undocumented_event_example.png]]
+![firestore_undocumented_event_example](img/firestore_undocumented_event_example.png)
 
 This in turn can be expressed in the UI. With a clear signal that the documentation is out of date. Perhaps a call to action button to update the documentation? A low effort, auto population of most fields makes the up-to-date ambition of the tracking documentation almost as easy as to misconfigure GA4 (thanks, Google.)
 
-![[img/web_submit_undocumented_event.gif]]
+![web_submit_undocumented_event](img/web_submit_undocumented_event.gif)
 ## Why not take this one step further with some quality assurance?
 When the documentation is complete and everything is up and running, now it's time to get fine-grain control of all collected data: validation before write. When a request is parsed into an event data object, tags are more than thrilled to start firing and sending data according to an immaculate server side tagging setup (good job you!) We need a way to make sure the data is clean and according to the documentation before sending it to our analytics endpoint. This is a first step of your machine learning journey: quality assured data.
 
