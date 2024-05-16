@@ -41,9 +41,9 @@ ___TEMPLATE_PARAMETERS___
   {
     "type": "TEXT",
     "name": "automaticDocumentationEndpoint",
-    "displayName": "Detect undocumented events on this endpoint",
+    "displayName": "Detect new events on this endpoint",
     "simpleValueType": true,
-    "help": "Measurement Protocol version 2 only"
+    "help": "Currently only measure protocol 2"
   }
 ]
 
@@ -109,209 +109,259 @@ if (getRequestPath() === data.endpoint) {
       }
       
       let firestoreData = updatedContent || cachedContent,
-          htmlContent    = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">';
-      htmlContent += '<title>GA4 Tracking documentation</title>';
-      htmlContent += '<style>';
-      htmlContent += '  * {';
-      htmlContent += '    box-sizing: border-box;';
-      htmlContent += '  }';
-      htmlContent += '  body, html {';
-      htmlContent += '    margin: 0;';
-      htmlContent += '    padding: 0;';
-      htmlContent += '    height: 100%;';
-      htmlContent += '    font-family: Arial, sans-serif;';
-      htmlContent += '  }';
-      htmlContent += '  header {';
-      htmlContent += '    display: flex;';
-      htmlContent += '    justify-content: space-between;';
-      htmlContent += '    align-items: center;';
-      htmlContent += '    padding: 20px;';
-      htmlContent += '    background-color: #f8f9fa;';
-      htmlContent += '    box-shadow: 0 2px 4px rgba(0,0,0,0.1);';
-      htmlContent += '    color: #495057;';
-      htmlContent += '  }';
-      htmlContent += '  .logo {';
-      htmlContent += '    font-size: 24px;';
-      htmlContent += '    color: #007bff;';
-      htmlContent += '  }';
-      htmlContent += '  .outline, .content {';
-      htmlContent += '    background-color: #ffffff;';
-      htmlContent += '    border: 1px solid #dee2e6;';
-      htmlContent += '    border-radius: 10px;';
-      htmlContent += '    overflow: auto;';
-      htmlContent += '    margin: 0 0 5%;';
-      htmlContent += '    height: 100%;';
-      htmlContent += '  }';
-      htmlContent += '  .content, .section {';
-      htmlContent += '    padding: 20px;';
-      htmlContent += '  }';
-      htmlContent += '  .wrapper {';
-      htmlContent += '    display:flex;';
-      htmlContent += '    flex-direction: column;';
-      htmlContent += '    flex-wrap: nowrap;';
-      htmlContent += '    justify-content: space-between;';
-      htmlContent += '    align-items: stretch;';
-      htmlContent += '  }';
-      htmlContent += '  .upper-section {';
-      htmlContent += '    margin-bottom: 2rem;';
-      htmlContent += '    border-bottom: 2px solid lightgrey;';
-      htmlContent += '  }';
-      htmlContent += '  button {';
-      htmlContent += '    border:none';
-      htmlContent += '  }';
-      htmlContent += '  .overview-btn, .submit-btn, .undocumented-btn {';
-      htmlContent += '    padding: 20px 16px;';
-      htmlContent += '    font-size: 16px;';
-      htmlContent += '    cursor: pointer;';
-      htmlContent += '  }';
-      htmlContent += '  .overview-btn {';
-      htmlContent += '    width: 100%;';
-      htmlContent += '    background-color: #fff;';
-      htmlContent += '    border-bottom: 2px solid lightgrey;';
-      htmlContent += '    box-shadow: 0 15px 15px 0px #fff;';
-      htmlContent += '    z-index: 1;';
-      htmlContent += '  }';
-      htmlContent += '  .submit-btn {';
-      htmlContent += '    background-color: #007bff;';
-      htmlContent += '    color: #fff;';
-      htmlContent += '    width: 100%;';
-      htmlContent += '    border-radius: 10px;';
-      htmlContent += '    box-shadow: 0 -15px 15px 0px #fff;';
-      htmlContent += '  }';
-      htmlContent += '  .undocumented-btn {';
-      htmlContent += '    background-color: #E9D502;';
-      htmlContent += '    border-radius: 10px;';
-      htmlContent += '  }';
-      htmlContent += '  dialog {';
-      htmlContent += '    margin: 2% 10%';
-      htmlContent += '  }';
-      htmlContent += '  form > .submit-btn {';
-      htmlContent += '    margin: 2rem auto;';
-      htmlContent += '    display:block;';
-      htmlContent += '  }';
-      htmlContent += '  .container {';
-      htmlContent += '    display: grid;';
-      htmlContent += '    grid-template-columns: 350px 1fr;';
-      htmlContent += '    grid-gap: 20px;';
-      htmlContent += '    padding: 20px;';
-      htmlContent += '    overflow: hidden;';
-      htmlContent += '  }';
-      htmlContent += '  .outline-item {';
-      htmlContent += '    margin: 15px;';
-      htmlContent += '    padding: 10px;';
-      htmlContent += '    background-color: #e9ecef;';
-      htmlContent += '    border: 1px solid #dee2e6;';
-      htmlContent += '    border-radius: 5px;';
-      htmlContent += '    cursor: pointer;';
-      htmlContent += '    transition: background-color 0.3s;';
-      htmlContent += '  }';
-      htmlContent += '  .outline-item:hover {';
-      htmlContent += '    background-color: #dee2e6;';
-      htmlContent += '  }';
-      htmlContent += '  .section-header {';
-      htmlContent += '    margin: 1rem 0 0 0;';
-      htmlContent += '    padding-bottom: 1rem;';
-      htmlContent += '    border-bottom: 2px solid #dee2e6;';
-      htmlContent += '    color: #007bff;';
-      htmlContent += '    font-size: 20px;';
-      htmlContent += '  }';
-      htmlContent += '  table {';
-      htmlContent += '    border-collapse: collapse;';
-      htmlContent += '    table-layout: fixed; ';
-      htmlContent += '    margin-bottom: 1rem; ';
-      htmlContent += '  }';
-      htmlContent += '  th, td {';
-      htmlContent += '    border: 1px solid #ddd;';
-      htmlContent += '    text-align: left;';
-      htmlContent += '    padding: 0.5em;';
-      htmlContent += '    word-wrap:break-word;';
-      htmlContent += '  }';
-      htmlContent += '  th {';
-      htmlContent += '    background-color: #f2f2f2;';
-      htmlContent += '    overflow:auto;';
-      htmlContent += '    color: #333;';
-      htmlContent += '  }';
-      htmlContent += '  tr:nth-child(even) {';
-      htmlContent += '    background-color: #f9f9f9;';
-      htmlContent += '  }';
-      htmlContent += '  textarea, input[type="text"]';
-      htmlContent += '    min-margin: 20rem;';
-      htmlContent += '  }';
-      htmlContent += '</style></head><body>';
-      
-      htmlContent += '<header>';
-      htmlContent += '  <div class="logo">Logotype</div>';
-      htmlContent += '</header>';
-      htmlContent += '<div class="container">';
-      htmlContent += '  <div class="wrapper">';
-      htmlContent += '    <div class="outline">';
-      htmlContent += '      <button class="overview-btn" onclick="updateContent(`Overview`)">Overview</button>';
+          htmlContent = '<!DOCTYPE html>';
+
+      htmlContent += '<html>';
+      htmlContent += '<head>';
+      htmlContent += '  <title>CTRL - Tracking documentation</title>';
+      htmlContent += '  <style>';
+      htmlContent += '    body {';
+      htmlContent += '      display: grid;';
+      htmlContent += '      grid-template-areas:';
+      htmlContent += '        "header header"';
+      htmlContent += '        "nav main"';
+      htmlContent += '        "footer footer";';
+      htmlContent += '      grid-template-columns: 400px 1fr;';
+      htmlContent += '      grid-template-rows: 100px 1fr 50px;';
+      htmlContent += '      height: 100vh;';
+      htmlContent += '      margin: 0;';
+      htmlContent += '      font-family: Arial, Helvetica, sans-serif;';
+      htmlContent += '    }';
+      htmlContent += '    header {';
+      htmlContent += '      grid-area: header;';
+      htmlContent += '      padding: 10px;';
+      htmlContent += '      color: #495057;';
+      htmlContent += '      display: flex;';
+      htmlContent += '      justify-content: space-between;';
+      htmlContent += '      align-items: center;';
+      htmlContent += '      box-shadow: 0 2px 4px rgba(0,0,0,0.1);';
+      htmlContent += '    }';
+      htmlContent += '    nav {';
+      htmlContent += '      grid-area: nav;';
+      htmlContent += '      background-color: #fff;';
+      htmlContent += '      flex: 1;';
+      htmlContent += '      display: flex;';
+      htmlContent += '      flex-flow: column;';
+      htmlContent += '      overflow-y: auto;';
+      htmlContent += '      padding: 5px;';
+      htmlContent += '      margin: 10px;';
+      htmlContent += '    }';
+      htmlContent += '    main {';
+      htmlContent += '      grid-area: main;';
+      htmlContent += '      flex: 1;';
+      htmlContent += '      overflow-y: auto;';
+      htmlContent += '      padding: 20px;';
+      htmlContent += '      margin: 10px;';
+      htmlContent += '    }';
+      htmlContent += '    table {';
+      htmlContent += '      border-collapse: collapse;';
+      htmlContent += '      table-layout: fixed;';
+      htmlContent += '      width: 100%;';
+      htmlContent += '    }';
+      htmlContent += '    tr:nth-child(even) {';
+      htmlContent += '      background-color: #f9f9f9;';
+      htmlContent += '    }';
+      htmlContent += '    th, td {';
+      htmlContent += '      border: 1px solid #ddd;';
+      htmlContent += '      text-align: left;';
+      htmlContent += '      padding: 0.5em;';
+      htmlContent += '      word-wrap: break-word;';
+      htmlContent += '    }';
+      htmlContent += '    th {';
+      htmlContent += '      background-color: #f2f2f2;';
+      htmlContent += '      color: #333;';
+      htmlContent += '    }';
+      htmlContent += '    dialog {';
+      htmlContent += '      width:80%;';
+      htmlContent += '    }';
+      htmlContent += '    th:nth-child(1) {';
+      htmlContent += '      width: 20%;';
+      htmlContent += '    }';
+      htmlContent += '    th:nth-child(2) {';
+      htmlContent += '      width: 5%;';
+      htmlContent += '    }';
+      htmlContent += '    th:nth-child(3) {';
+      htmlContent += '      width: 5%;';
+      htmlContent += '    }';
+      htmlContent += '    th:nth-child(4) {';
+      htmlContent += '      width: 20%;';
+      htmlContent += '    }';
+      htmlContent += '    th:nth-child(5) {';
+      htmlContent += '      width: 35%;';
+      htmlContent += '    }';
+      htmlContent += '    th:nth-child(6) {';
+      htmlContent += '      width: 15%;';
+      htmlContent += '    }';
+      htmlContent += '    footer {';
+      htmlContent += '      grid-area: footer;';
+      htmlContent += '      background-color: #333;';
+      htmlContent += '      color: #fff;';
+      htmlContent += '      justify-content: center;';
+      htmlContent += '      display: flex;';
+      htmlContent += '    }';
+
+      htmlContent += '    #logo {';
+      htmlContent += '      color: #007bff;';
+      htmlContent += '      font-size: 24px;';
+      htmlContent += '    }';
+      htmlContent += '    #overview-btn, #undocumented-btn, .submit-btn {';
+      htmlContent += '      padding: 20px 16px;';
+      htmlContent += '      border: none;';
+      htmlContent += '      cursor: pointer;';
+      htmlContent += '      font-size: 16px;';
+      htmlContent += '    }';
+      htmlContent += '    #overview-btn, .submit-btn {';
+      htmlContent += '      display: flex;';
+      htmlContent += '      justify-content: center;';
+      htmlContent += '      align-items: center;';
+      htmlContent += '    }';
+      htmlContent += '    #undocumented-btn {';
+      htmlContent += '      background-color: #E9D502;';
+      htmlContent += '      border-radius: 10px;';
+      htmlContent += '      visibility: hidden;';
+      htmlContent += '    }';
+      htmlContent += '    #download-btn {';
+      htmlContent += '      border: none;';
+      htmlContent += '      cursor: pointer;';
+      htmlContent += '      background-color: #fff;';
+      htmlContent += '    }';
+      htmlContent += '    #overview-btn {';
+      htmlContent += '      border-bottom: 2px solid lightgrey;';
+      htmlContent += '      background-color: #fff;';
+      htmlContent += '    }';
+      htmlContent += '    #events {';
+      htmlContent += '      list-style: none;';
+      htmlContent += '      padding: 0;';
+      htmlContent += '      margin: 0;';
+      htmlContent += '      overflow-y: auto;';
+      htmlContent += '      flex-flow: column;';
+      htmlContent += '    }';
+      htmlContent += '    #events li {  ';
+      htmlContent += '      margin: 15px;';
+      htmlContent += '      padding: 10px;';
+      htmlContent += '      background-color: #e9ecef;';
+      htmlContent += '      border: 1px solid #dee2e6;';
+      htmlContent += '      border-radius: 5px;';
+      htmlContent += '      cursor: pointer;';
+      htmlContent += '      transition: background-color 0.3s;';
+      htmlContent += '    }';
+      htmlContent += '    #events li:hover {';
+      htmlContent += '      background-color: #dee2e6;';
+      htmlContent += '    }';
+
+      htmlContent += '    .border {';
+      htmlContent += '      border: 1px solid #dee2e6;';
+      htmlContent += '      border-radius: 10px;';
+      htmlContent += '    }';
+      htmlContent += '    .header-btns {';
+      htmlContent += '      display: flex;';
+      htmlContent += '      justify-content: center;';
+      htmlContent += '      align-items: center;';
+      htmlContent += '      gap: 10px;';
+      htmlContent += '    }';
+      htmlContent += '    .submit-btn {';
+      htmlContent += '      border-top: 2px solid lightgrey;';
+      htmlContent += '      margin-top: auto;';
+      htmlContent += '      box-shadow: 0 -15px 15px 0px #fff;';
+      htmlContent += '      border-radius: 10px;';
+      htmlContent += '      background-color: #007bff;';
+      htmlContent += '      color: #fff;';
+      htmlContent += '      width: 100%;';
+      htmlContent += '    }';
+      htmlContent += '    .upper-section {';
+      htmlContent += '      border-bottom: 2px solid lightgrey;';
+      htmlContent += '    }';
+      htmlContent += '    .upper-section h2 {';
+      htmlContent += '      font-size: 1.5rem;';
+      htmlContent += '    }';
+      htmlContent += '    .lower-section :is(h1,h2,h3,h4,h5,h6) {';
+      htmlContent += '      color: #007bff;';
+      htmlContent += '      font-size: 1.5rem;';
+      htmlContent += '      border-bottom: 2px solid #dee2e6;';
+      htmlContent += '    }';
+      htmlContent += '  </style>';
+      htmlContent += '</head>';
+            
+      htmlContent += '<body>';
+      htmlContent += '  <header>';
+      htmlContent += '    <div id="logo">Logotype</div>';
+      htmlContent += '    <h1>Automated tracking documentation</h1>';
+      htmlContent += '    <div class="header-btns">';
+      htmlContent += '      <button id="undocumented-btn" onclick="showUndocumentedEvents()">Undocumented events</button>';
+      htmlContent += '      <button id="download-btn" onclick="downloadFirestoreData()" title="Download all tracking documentation">';
+      htmlContent += '      <svg xmlns="http://www.w3.org/2000/svg" width="45px" height="45px" fill="none" viewBox="0 0 24 24">';
+      htmlContent += '        <path d="M8 5.00005C7.01165 5.00082 6.49359 5.01338 6.09202 5.21799C5.71569 5.40973 5.40973 5.71569 5.21799 6.09202C5 6.51984 5 7.07989 5 8.2V17.8C5 18.9201 5 19.4802 5.21799 19.908C5.40973 20.2843 5.71569 20.5903 6.09202 20.782C6.51984 21 7.07989 21 8.2 21H15.8C16.9201 21 17.4802 21 17.908 20.782C18.2843 20.5903 18.5903 20.2843 18.782 19.908C19 19.4802 19 18.9201 19 17.8V8.2C19 7.07989 19 6.51984 18.782 6.09202C18.5903 5.71569 18.2843 5.40973 17.908 5.21799C17.5064 5.01338 16.9884 5.00082 16 5.00005M8 5.00005V7H16V5.00005M8 5.00005V4.70711C8 4.25435 8.17986 3.82014 8.5 3.5C8.82014 3.17986 9.25435 3 9.70711 3H14.2929C14.7456 3 15.1799 3.17986 15.5 3.5C15.8201 3.82014 16 4.25435 16 4.70711V5.00005M12 11V17M12 17L10 15M12 17L14 15" stroke="#000000" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>';
+      htmlContent += '      </svg>';
+      htmlContent += '    </button>';
       htmlContent += '    </div>';
+      htmlContent += '  </header>';
+      htmlContent += '  <nav class="border">';
+      htmlContent += '    <button id="overview-btn" onclick="updateContent(`overview`)">Overview</button>';
+      htmlContent += '    <ul id="events"></ul>';
       htmlContent += '    <button class="submit-btn" onclick="newEvent()">Submit new event</button>';
-      htmlContent += '  </div>';
-      
-      htmlContent += '  <div class="content">';
+      htmlContent += '  </nav>';
+      htmlContent += '  <main class="border">';
       htmlContent += '    <div class="upper-section">';
-      htmlContent += '      <h2 id="event_name">Overview events</h2>';
-      htmlContent += '      <p id="event_description">Nothing but overview.</p>';
+      htmlContent += '      <h2 id="event_name">Overview</h2>';
+      htmlContent += '      <p id="event_description">Quisque ut dolor gravida, placerat libero vel, euismod.</p>';
       htmlContent += '    </div>';
-      htmlContent += '    <div class="section lower-section">';
-      htmlContent += '      <h3 class="section-header">Event Parameters</h3>';
-      htmlContent += '      <p id="event_parameters">No event parameters documented.</p>';
-      htmlContent += '      <h3 class="section-header">User Properties</h3>';
-      htmlContent += '      <p id="user_properties""">No user properties documented.</p>';
-      htmlContent += '      <h3 class="section-header">Item Parameters</h3>';
-      htmlContent += '      <p id="item_parameters">No item parameters documented.</p>';
+      htmlContent += '    <div class="lower-section">';
+      htmlContent += '      <h3>Event parameters</h3>';
+      htmlContent += '      <p id="event_parameters">Nec dubitamus multa iter quae et nos invenerat.</p>';
+      htmlContent += '      <h3>User properties</h3>';
+      htmlContent += '      <p id="user_properties">Nec dubitamus multa iter quae et nos invenerat.</p>';
+      htmlContent += '      <h3>Item parameters</h3>';
+      htmlContent += '      <p id="item_parameters">Nec dubitamus multa iter quae et nos invenerat.</p>';
       htmlContent += '    </div>';
-      htmlContent += '  </div>';
-      htmlContent += '</div>';
-      
-      htmlContent += '<dialog id="formDialog">';
-      htmlContent += '  <form onsubmit="submitEvent(event)">';
-      htmlContent += '    <h3>Event Name:</h3>';
-      htmlContent += '    <input type="text" id="add_event_name" name="add_event_name" required>';
-      htmlContent += '    <h3>Description:</h3>';
-      htmlContent += '    <textarea id="add_event_description" name="add_event_description" required></textarea>';
-      htmlContent += '    <h3>Event parameters:</h3>';
-      htmlContent += '    <table id="add_event_parameters">';
-      htmlContent += '    <thead><tr><th style="width:30%;">Key</th><th style="width:5%;">Type</th><th style="width:5%;">Required</th><th style="width:10%;">Example</th><th style="width:50%;">Description</th><</tr></thead><tbody></tbody>';
-      htmlContent += '    </table>';
-      htmlContent += '    <button type="button" onclick="addTableRow(`add_event_parameters`)">Add parameter</button>';
-      htmlContent += '    <h3>User properties:</h3>';
-      htmlContent += '    <table id="add_user_properties">';
-      htmlContent += '    <thead><tr><th style="width:30%;">Key</th><th style="width:5%;">Type</th><th style="width:5%;">Required</th><th style="width:10%;">Example</th><th style="width:50%;">Description</th></tr></thead><tbody></tbody>';
-      htmlContent += '    </table>';
-      htmlContent += '    <button type="button" onclick="addTableRow(`add_user_properties`)">Add property</button>';
-      htmlContent += '    </table>';
-      htmlContent += '    <h3>Item parameters:</h3>';
-      htmlContent += '    <table id="add_item_parameters">';
-      htmlContent += '    <thead><tr><th style="width:30%;">Key</th><th style="width:5%;">Type</th><th style="width:5%;">Required</th><th style="width:10%;">Example</th><th style="width:50%;">Description</th></tr></thead><tbody></tbody>';
-      htmlContent += '    </table>';
-      htmlContent += '    <button type="button" onclick="addTableRow(`add_item_parameters`)">Add parameter</button>';
-      htmlContent += '    <button type="submit" class="submit-btn">Submit form</input>';
-      htmlContent += '  </form>';
-      htmlContent += '</dialog>';
+      htmlContent += '  </main>';
+      htmlContent += '  <dialog id="formDialog">';
+      htmlContent += '      <form onsubmit="submitEvent(event)">';
+      htmlContent += '        <h3>Event Name:</h3>';
+      htmlContent += '        <input type="text" id="add_event_name" name="add_event_name" required>';
+      htmlContent += '        <h3>Description:</h3>';
+      htmlContent += '        <textarea id="add_event_description" name="add_event_description" required></textarea>';
+      htmlContent += '        <h3>Event parameters:</h3>';
+      htmlContent += '        <table id="add_event_parameters">';
+      htmlContent += '        <thead><tr><th>Key</th><th>Type</th><th>Required</th><th>Example</th><th>Description</th></tr></thead><tbody></tbody>';
+      htmlContent += '        </table>';
+      htmlContent += '        <button type="button" onclick="addTableRow(`add_event_parameters`)">Add parameter</button>';
+      htmlContent += '        <h3>User properties:</h3>';
+      htmlContent += '        <table id="add_user_properties">';
+      htmlContent += '        <thead><tr><th>Key</th><th>Type</th><th>Required</th><th>Example</th><th>Description</th></tr></thead><tbody></tbody>';
+      htmlContent += '        </table>';
+      htmlContent += '        <button type="button" onclick="addTableRow(`add_user_properties`)">Add property</button>';
+      htmlContent += '        </table>';
+      htmlContent += '        <h3>Item parameters:</h3>';
+      htmlContent += '        <table id="add_item_parameters">';
+      htmlContent += '        <thead><tr><th>Key</th><th>Type</th><th>Required</th><th>Example</th><th>Description</th></tr></thead><tbody></tbody>';
+      htmlContent += '        </table>';
+      htmlContent += '        <button type="button" onclick="addTableRow(`add_item_parameters`)">Add parameter</button>';
+      htmlContent += '        <br>';
+      htmlContent += '        <br>';
+      htmlContent += '        <br>';
+      htmlContent += '        <button type="submit" class="submit-btn">Submit form</input>';
+      htmlContent += '      </form>';
+      htmlContent += '  </dialog>';
+      htmlContent += '  <footer>';
+      htmlContent += '    <p>Made by CTRL Digital</p>';
+      htmlContent += '  </footer>';
             
       htmlContent += '<script>';
       htmlContent += 'const response =' + JSON.stringify(firestoreData) + ';';
             
 // --------------------------- Show the undocumented button if undocumented events exists -----------------------------
       
-      htmlContent += '(function(list, className) {';
+      htmlContent += '(function(list, id) {';
       htmlContent += '  list.forEach(eventName => {';
-      htmlContent += '    const div = document.createElement("div");';
+      htmlContent += '    const li = document.createElement("li");';
       htmlContent += '    if (eventName === "undocumented") {';
-      htmlContent += '      const button = document.createElement("button");';
-      htmlContent += '      button.className = "undocumented-btn";';
-      htmlContent += '      button.textContent = "Undocumented events";';
-      htmlContent += '      button.setAttribute("onclick", "showUndocumentedEvents()");';
-      htmlContent += '      document.querySelector("header").appendChild(button);';
+      htmlContent += '      document.getElementById("undocumented-btn").style.visibility = "visible";';
       htmlContent += '    } else {';
-      htmlContent += '      div.className = "outline-item";';
-      htmlContent += '      div.setAttribute("onclick", `updateContent("${eventName}")`);';
-      htmlContent += '      document.querySelector("." + className).appendChild(div);';
+      htmlContent += '      li.className = "events-item";';
+      htmlContent += '      li.setAttribute("onclick", `updateContent("${eventName}")`);';
+      htmlContent += '      li.textContent = eventName;';
+      htmlContent += '      document.querySelector(id).appendChild(li);';
       htmlContent += '    }';
-      htmlContent += '    div.textContent = eventName;';
       htmlContent += '  });';
 
       let eventList       = [],
@@ -325,21 +375,35 @@ if (getRequestPath() === data.endpoint) {
       
       eventList.sort().forEach(eventName => eventListString += '"' + eventName + '",');
       
-      htmlContent += '})(' + eventListString + '], "outline");';
+      htmlContent += '})(' + eventListString + '], "#events");';
+      
+// --------------------------- Download all Firestore data as json -----------------------------
+      
+      htmlContent += 'function downloadFirestoreData() {';
+      htmlContent += '  const jsonData = JSON.stringify(response, null, 2);';
+      htmlContent += '  const blob = new Blob([jsonData], { type: "application/json" });';
+      htmlContent += '  const link = document.createElement("a");';
+      htmlContent += '  link.download = "tracking_documentation.json";';
+      htmlContent += '  link.href = URL.createObjectURL(blob);';
+      htmlContent += '  document.body.appendChild(link);';
+      htmlContent += '  link.click();';
+      htmlContent += '  document.body.removeChild(link);';
+      htmlContent += '}';
       
 // --------------------------- Show the clicked events event, user, and item details -----------------------------
       
       htmlContent += 'function updateContent(eventName) {';
-      htmlContent += '  restoreLowerSectionContent();';
+      htmlContent += '  restoreSectionContent();';
+      htmlContent += '  if (!eventName) return;';
       htmlContent += '  response.forEach(event => {';
       htmlContent += '    const name = event.id.replace("' + collection +'/", "");';
       htmlContent += '    if (name !== eventName) return;';
-      htmlContent += '    const description = event.data.eventDescription;';
+      htmlContent += '    const description = event.data.event_description;';
       htmlContent += '    document.getElementById("event_name").innerHTML = name;';
       htmlContent += '    document.getElementById("event_description").innerHTML = description;';
       htmlContent += '    let eventParameters,userProperties,itemParameters,';
       htmlContent += '        table = document.createElement("table");';
-      htmlContent += '    table.innerHTML = `<thead><tr><th style="width:30%;">Key</th><th style="width:5%;">Type</th><th style="width:5%;">Required</th><th style="width:10%;">Example</th><th style="width:50%;">Description</th></tr></thead><tbody></tbody>`;';
+      htmlContent += '    table.innerHTML = `<thead><tr><th>Key</th><th>Type</th><th>Required</th><th>Example</th><th>Description</th></tr></thead><tbody></tbody>`;';
       htmlContent += '    if (event.data.event_parameters) {';
       htmlContent += '      let id = "event_parameters",';
       htmlContent += '          element = document.getElementById(id),';
@@ -407,7 +471,7 @@ if (getRequestPath() === data.endpoint) {
       htmlContent += '      <tr>';
       htmlContent += '        <th style="width:20%;">Event Name</th>';
       htmlContent += '        <th style="width:60%;">Request data</th>';
-      htmlContent += '        <th style="width:20%;">Action</th>';
+      htmlContent += '        <th style="width:5%;">Action</th>';
       htmlContent += '      </tr>';
       htmlContent += '    </thead>';
       htmlContent += '    <tbody id="undocumentedEventsTableBody">';
@@ -450,17 +514,24 @@ if (getRequestPath() === data.endpoint) {
       
 // --------------------------- Clear the details about the undocumented events and populate the generic structure -----------------------------
       
-      htmlContent += 'function restoreLowerSectionContent() {';
+      htmlContent += 'function restoreSectionContent() {';
       htmlContent += '  const lowerSection = document.querySelector(".lower-section");';
-      htmlContent += '  const restoredContent = `';
-      htmlContent += '    <h3 class="section-header">Event Parameters</h3>';
+      htmlContent += '  let restoredContent = `';
+      htmlContent += '    <h3>Event parameters</h3>';
       htmlContent += '    <p id="event_parameters">No event parameters documented.</p>';
-      htmlContent += '    <h3 class="section-header">User Properties</h3>';
+      htmlContent += '    <h3>User properties</h3>';
       htmlContent += '    <p id="user_properties">No user properties documented.</p>';
-      htmlContent += '    <h3 class="section-header">Item Parameters</h3>';
+      htmlContent += '    <h3>Item parameters</h3>';
       htmlContent += '    <p id="item_parameters">No item parameters documented.</p>';
       htmlContent += '  `;';
       htmlContent += '  lowerSection.innerHTML = restoredContent;';
+      
+      htmlContent += '  const upperSection = document.querySelector(".upper-section");';
+      htmlContent += '  restoredContent = `';
+      htmlContent += '    <h2 id="event_name">Overview</h3>';
+      htmlContent += '    <p id="event_description">An overview of all data available in tracking documentation</p>';
+      htmlContent += '  `;';
+      htmlContent += '  upperSection.innerHTML = restoredContent;';
       htmlContent += '};';
       
 // --------------------------- Open up dialog to add new event to documentation -----------------------------
@@ -488,7 +559,8 @@ if (getRequestPath() === data.endpoint) {
                         '<option value="string">String</option>' +
                         '<option value="integer">Integer</option>' +
                         '<option value="float">Float</option>' +
-                        '<option value="boolean">Boolean</option>`;';
+                        '<option value="boolean">Boolean</option>' +
+                        '<option value="timestamp">Timestamp</option>`;';
       htmlContent += '  cell = newRow.insertCell(2);';
       htmlContent += '  cell.innerHTML = object?.required ? "Yes" : ' +
                           'object? "No" : ' + 
@@ -496,9 +568,9 @@ if (getRequestPath() === data.endpoint) {
                               '<option value="No">No</option>' +
                               '<option value="Yes">Yes</option>`;';
       htmlContent += '  cell = newRow.insertCell(3);';
-      htmlContent += '  cell.innerHTML = object ? object?.example || "No example added" : `<textarea type="text" name="example" required>`;';
+      htmlContent += '  cell.innerHTML = object ? object?.example || "No example added" : `<textarea type="text" name="example">`;';
       htmlContent += '  cell = newRow.insertCell(4);';
-      htmlContent += '  cell.innerHTML = object ? object?.description || "No description added" : `<textarea type="text" name="description" required>`;';
+      htmlContent += '  cell.innerHTML = object ? object?.description || "No description added" : `<textarea type="text" name="description">`;';
       htmlContent += '  if(!object) {';
       htmlContent += '    cell = newRow.insertCell(5);';
       htmlContent += '    cell.innerHTML = `<button type="button" class="remove_row" onclick="removeParameterRow(this)">Remove</button>`;';
@@ -532,17 +604,18 @@ if (getRequestPath() === data.endpoint) {
       htmlContent += '          removeRowCell = row.insertCell();';
                         // Populate cells with inputs
       htmlContent += '    keyCell.innerHTML = `<input type="text" name="key" value="${key}" required>`;';
-      htmlContent += '    typeCell.innerHTML = `<select name="type" required>' +
+      htmlContent += '    typeCell.innerHTML = `<select name="type" value="${type}" required>' +
                         '<option value="string">String</option>' +
                         '<option value="integer">Integer</option>' +
                         '<option value="float">Float</option>' +
                         '<option value="boolean">Boolean</option>' +
+                        '<option value="timestamp">Timestamp</option>' +
                         '</select>`;';
-      htmlContent += '    requiredCell.innerHTML = `<select name="required" required>' + 
+      htmlContent += '    requiredCell.innerHTML = `<select name="required" value="${required}" required>' + 
                         '<option value="No">No</option>' + 
                         '<option value="Yes">Yes</option></select>`;';
       htmlContent += '    exampleCell.innerHTML = `<textarea name="example" required>${example}</textarea>`;';
-      htmlContent += '    descriptionCell.innerHTML = `<textarea name="description" required>${description}</textarea>`;';
+      htmlContent += '    descriptionCell.innerHTML = `<textarea name="description">${description}</textarea>`;';
       htmlContent += '    removeRowCell.innerHTML = `<button type="button" class="remove_row" onclick="removeParameterRow(this)">Remove</button>`;';
       htmlContent += '  };';
                         // Filter out "x-…" fields and populate event parameters
@@ -553,11 +626,11 @@ if (getRequestPath() === data.endpoint) {
       htmlContent += '      } else if (key === "items" && Array.isArray(value)) {';
       htmlContent += '        value.forEach(item => {';
       htmlContent += '          Object.entries(item).forEach(([itemKey, itemValue]) => {';
-      htmlContent += '            createRow("add_item_parameters", { key: itemKey, type: false, required: "No", example: JSON.stringify(itemValue).replace(/(^")|("$)/g,""), description: "" });';
+      htmlContent += '            createRow("add_item_parameters", { key: itemKey, type: "string", required: "No", example: JSON.stringify(itemValue).replace(/(^")|("$)/g,""), description: "" });';
       htmlContent += '          });';
       htmlContent += '        });';
       htmlContent += '      } else {';
-      htmlContent += '        createRow("add_event_parameters", { key: key, type: false, required: "No", example: JSON.stringify(value).replace(/(^")|("$)/g,""), description: "" });';
+      htmlContent += '        createRow("add_event_parameters", { key: key, type: "string", required: "No", example: JSON.stringify(value).replace(/(^")|("$)/g,""), description: "" });';
       htmlContent += '      }';
       htmlContent += '  });';
       htmlContent += '  newEvent()';
@@ -570,7 +643,7 @@ if (getRequestPath() === data.endpoint) {
       htmlContent += '  let eventName = document.getElementById("add_event_name").value,';
       htmlContent += '      eventDescription = document.getElementById("add_event_description").value,';
       htmlContent += '      suffixes = {"event":"_parameters", "user":"_properties", "item":"_parameters"},';
-      htmlContent += '      formData = { eventName: eventName, eventDescription: eventDescription };';
+      htmlContent += '      formData = { event_Name: eventName, event_description: eventDescription };';
       htmlContent += '  Object.entries(suffixes).forEach(([key, value]) => {';
       htmlContent += '    let params = [],';
       htmlContent += '        tableBodyRows = document.getElementById("add_" + key + value).getElementsByTagName("tbody")[0].rows;';
@@ -925,6 +998,6 @@ scenarios: []
 
 ___NOTES___
 
-Created on 27/03/2024, 13:39:22
+Created on 16/05/2024, 13:38:26
 
 

@@ -5,7 +5,7 @@
   "id": "cvt_temp_public_id",
   "version": 1,
   "securityGroups": [],
-  "displayName": "CTRL - Documented event approval",
+  "displayName": "CTRL - Tracking documentation approval",
   "description": "Returns true or false depending on the documented event and its required parameters.",
   "containerContexts": [
     "SERVER"
@@ -19,7 +19,7 @@ ___TEMPLATE_PARAMETERS___
   {
     "type": "TEXT",
     "name": "eventName",
-    "displayName": "Event name",
+    "displayName": "Event name parameter",
     "simpleValueType": true,
     "help": "Used as Firestore document name for lookup",
     "valueHint": "Defaults to event_name if not set"
@@ -93,7 +93,7 @@ VALID_EVENT = Firestore.read(firestoreCollection + '/' + event, {
     VALID_EVENT = REQUIRED_PARAMS.every(paramExistsWithValue);
   
     return VALID_EVENT;
-  }, (error) => {log(error); return false;});
+  }, (error) => {if (error.reason != "not_found" ) log(error); return false;});
 
 function validateEvent(data) {
   if (getType(data) !== 'object') fail('Firestore response was not an object');
@@ -251,6 +251,6 @@ setup: |-
 
 ___NOTES___
 
-Created on 27/03/2024, 13:39:34
+Created on 16/05/2024, 13:38:53
 
 
