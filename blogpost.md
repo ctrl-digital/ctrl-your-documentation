@@ -42,31 +42,54 @@ There's always the prebuilt Firestore variable available in Google Tag Manager. 
 So let's do it the fun way! Create a custom variable template and lets reuse the code from the previous client template which *also benefits greatly of having a cache*. This variable will return a `truthy` or `falsey` value for which you'll append its response to the event data object with the help of a Google Tag Manager transformation. Once there, set up an exception trigger to prevent tags from firing when an event either isn't up to date regarding `Required` parameters sent or previously documented.
 
 ```js
-const cachedContent = templateDataStorage.getItemCopy('firestoreData') || {},
-	lastFetch     = templateDataStorage.getItemCopy('lastFetched') || 0,
-	maxDayOldData = getTimestampMillis() - (24 * 60 * 60 * 1000);
+const cachedContent = cachedDataExists();
 
-Promise.all([
-	Promise.create((resolve, reject) => {
-	    if (!cachedContent || maxDayOldData > lastFetch) {
-          resolve(Firestore.query(
-            collection, 
-            [], 
-            { projectId: projectId, limit: 10000 }
-          ).then().catch(error => {
-            if (getType(error) === 'object') {
-              log('Error likely due to a document with a key without value. Populate all documents and keys in Firestore and try again.');
-            } else {
-              log(error);
-            }
-          })); 
+if (getRequestPath() === data.endpoint) {
+  claimRequest();
+// If the no data is available, fetch new data
+  if (!cachedContent) {
+    Firestore.query(collection, [], { projectId: projectId, limit: 10000 })
+      .then(firestoreData => {
+        if (firestoreData) {
+          setTemplateStorages(firestoreData); 
+          
+          let htmlPage = generateHtmlPage(firestoreData);
+          
+          setResponseBody(htmlPage);
+          setResponseStatus(200);
+          returnResponse();
         } else {
-          log('Documentation: Read data from cache.');
-          resolve();
-        }
-      }),
-    cachedContent
-    ]).then( //TODO: the code
+          log('No data returned from Firestore');
+          setResponseStatus(500);
+          returnResponse();
+        }});
+  } else {
+    log('Documentation: Read data from cache.');
+    
+    let htmlPage = generateHtmlPage(cachedContent);
+    
+    setResponseBody(htmlPage);
+    setResponseStatus(200);
+    returnResponse();
+  }
+…
+
+function cachedDataExists() {
+  let cachedContent  = templateDataStorage.getItemCopy('firestoreData') || {},
+      lastFetch      = templateDataStorage.getItemCopy('lastFetched') || 0,
+      lastUpdate     = templateDataStorage.getItemCopy('lastUpdate') || 0,
+      maxDayOldData  = getTimestampMillis() - (24 * 60 * 60 * 1000);
+  
+  // Returns false if:
+  // - Previous data doesn't exists,
+  // - The Firestore data has been updated more recently than last fetch,
+  // - More than one day has passed since last fetch (fail safe, if manual update of Firestore Data).
+  if (!cachedContent || lastUpdate > lastFetch || maxDayOldData > lastFetch) {
+    return false;
+  }
+  
+  return cachedContent;
+}
 ```
 ## Example code
 Head over to [our GitHub page](https://github.com/ctrl-digital) and download the `.tpl` files and get going! The code is available as soon as it has been deemed functional.

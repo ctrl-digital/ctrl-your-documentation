@@ -14,7 +14,6 @@ The client stores the responses from Firestore in its template cache. It limits 
 - Monitoring: enables monitoring of all collected events and notifies whenever an undocumented event is registered.
 ### Setup
 - (Required) The client needs a Firestore collection to read. The documents in this collection must not be empty, as it generates an error in the GTM Firestore API.
-- (Optional) The client needs an endpoint to monitor for undocumented events.
 - (Optional) The client requires to be prioritised above the intended claiming client for the endpoint for the undocumented function to work. 
   Example: if the received requests which is to be documented is GA4, then the client need to be prioritised at least one more than the claiming GA4 client. This is to read the incoming request without claiming it.
 ## The variable template
