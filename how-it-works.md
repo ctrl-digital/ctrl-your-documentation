@@ -1,3 +1,7 @@
+---
+created: 2024-03-28
+modified: 2024-11-18
+---
 # How it works
 
 ## The client template
@@ -37,13 +41,13 @@ The API cannot handle an empty document. If data suddenly disappears from the do
 - (Required) Activate the service in Google Cloud.
   **Important**: the service must be activated as `Firestore in Native mode`. Datastore is not compatible. If it was created in `Datastore mode`, then all data has to be deleted before the project can switch to `Native mode`
 - (Required) Create a collection named appropriately; `tracking_documentation`, `gtm_documentation` as examples
-- (Optional) If the Firestore is to be in a separate project, then the service account of the Google Tag Manager server project needs to be added in the IAM. The service account is commonly named by the project ID first followed by generic host, e.g. `gtm-1a2b3c@appspot.gserviceaccount.com` 
+- (Optional) If the Firestore is to be in a separate project, then the service account used by the Google Tag Manager Server in it's own project needs to be added in the IAM. The service account is commonly named by the project ID first followed by generic host, e.g. `gtm-1a2b3c@appspot.gserviceaccount.com` , or similar to `12345-compute@developer.gserviceaccount.com` .
 ## Next step
-The setup is a v1.0. It serves the purpose of providing the whitelisting feature along with an interface of which anyone knowledgeable about the link to visit and overview along with document all events.
+The setup is a v2.0. It serves the purpose of providing the whitelisting feature along with an interface of which anyone knowledgeable about the link to visit and overview along with document all events.
 
 **Possible next steps:**
-- Separate the client template and the generated page. The HTML file, along with the necessary CSS and JavaScript, is currently generated as a string within the client template. This makes it unnecessarily complicated to develop and maintain. The client should instead request the HTML file from a separate hosting location, preferably owned by CTRL Digital, and serve that file with the Firestore data attached.
 - Introduce a password protection feature to safeguard the feature of adding events to the documentation. This is to limit people adding events which later can contaminate all the collected data.
+- Validate events by type checking the appended event and item parameters and the user properties.
 - Integrate BigQuery runs to evaluate past event count and display as sparklines / warnings if event count dips unexpected.
 - Update the cache logic for more robust handling of Firestore data retrieval and cross-instances updates.
 

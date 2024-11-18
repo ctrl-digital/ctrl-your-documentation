@@ -5,7 +5,7 @@
   "id": "cvt_temp_public_id",
   "version": 1,
   "securityGroups": [],
-  "displayName": "CTRL - Tracking documentation approval",
+  "displayName": "CTRL - Lookup valid event",
   "description": "Returns true or false depending on the documented event and its required parameters.",
   "containerContexts": [
     "SERVER"
@@ -79,47 +79,33 @@ const firestoreId = data.firestoreId;
 const firestoreCollection = data.firestoreCollection;
 const event = data.eventName || eventData.event_name;
 
-let VALID_EVENT = true,
-    REQUIRED_PARAMS = [];
+let validEvent = true;
 
-VALID_EVENT = Firestore.read(firestoreCollection + '/' + event, {
-    projectId: firestoreId,
-  }).then((result) =>{
-    const firestore_data = result.data;
-    validateEvent(firestore_data);
+// Checks events field in Firestore
+validEvent = Firestore.read(firestoreCollection + '/events', { projectId: firestoreId })
+  .then((result) =>{
+    const firestoreData = result.data;
+    
+    // Extracts the event in mind. If undocumented, return false
+    const documentedEvent = firestoreData[event];
+    if (!documentedEvent) return false;
+    
+    // Function to check all required params are received
+    const receivedParam = (param) => eventData[param] !== undefined ? true : false;
   
-    const paramExistsWithValue = (param) => eventData[param] !== undefined ? true : false;
+    // Get all required params (array) and validate against received event data.
+    const requiredParams = documentedEvent.required_parameters;
+    validEvent = requiredParams.every(receivedParam);
   
-    VALID_EVENT = REQUIRED_PARAMS.every(paramExistsWithValue);
-  
-    return VALID_EVENT;
+    return validEvent;
   }, (error) => {if (error.reason != "not_found" ) log(error); return false;});
 
-function validateEvent(data) {
-  if (getType(data) !== 'object') fail('Firestore response was not an object');
-  nestedKeys(data);
-  
-  function nestedKeys(data) {
-    Object.entries(data).forEach((obj)=> {
-      let key = obj[0],
-          value = obj[1];
-      if (getType(value) === 'array') {
-        value.forEach(subObj => {
-          nestedKeys(subObj);
-        });
-      }
-      
-      if (key === 'required' && value) REQUIRED_PARAMS.push(data.key);
-      return;
-    });
-  }
-}
 function fail(msg) {
   log(msg);
   return undefined;
 }
 
-return VALID_EVENT;
+return validEvent;
 
 
 ___SERVER_PERMISSIONS___
@@ -251,6 +237,6 @@ setup: |-
 
 ___NOTES___
 
-Created on 16/05/2024, 13:38:53
+Created on 11/18/2024, 5:30:45 PM
 
 
