@@ -234,7 +234,6 @@ function processAutoDocumentationRequest(firestoreData) {
     const request = extractEventsFromMpv2();
     
     request.forEach(event => {
-      log('Event:',event);
       
       let newEventName           = event.event_name,
           newEvent               = cleanCustomKeys(event),
@@ -242,8 +241,6 @@ function processAutoDocumentationRequest(firestoreData) {
           newEventKeys           = getNestedKeys(newEvent),
           documentedEvent        = findDocumentedEvent(firestoreData, newEventName) || [],
           undocumentedEvent      = findUndocumentedEvent(firestoreData, newEventName) || [];
-      
-      log('New event:',newEvent);
       
       if ((documentedEvent.length === 0 && undocumentedEvent.length === 0) || 
           (undocumentedEvent.length > 0 && hasNewKey(newEventKeys, undocumentedEvent)) ||
@@ -713,6 +710,6 @@ scenarios: []
 
 ___NOTES___
 
-Created on 11/18/2024, 5:30:37 PM
+Created on 11/25/2024, 3:09:43 PM
 
 
